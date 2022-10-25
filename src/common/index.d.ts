@@ -15,7 +15,7 @@ export interface Device {
     area: string;
     ID: number;
     description: string;
-    idevice: number;
+    idevice?: number;
 }
 
 export interface DevicesInfo {
@@ -56,6 +56,13 @@ export interface DevToSend {
     ID: number;
     description: string;
 }
+
+export interface DevLogsSlice {
+    devices: Device[];
+    logs: DeviceLogs;
+    selectedType: number
+}
+
 //
 // export interface TableLog {
 //     id: number,

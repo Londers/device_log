@@ -4,13 +4,15 @@ import axios, {AxiosResponse} from "axios";
 import AppBar from "../features/AppBar";
 import Tables from "../features/Tables";
 import {DeviceLogs, DevicesInfo, DevToSend} from "../common";
+import {useAppDispatch, useAppSelector} from "./hooks";
+import {selectDevices, setLogs} from "../features/deviceLogsSlice";
 
 function App() {
+    const dispatch = useAppDispatch()
     const [devicesInfo, setDevicesInfo] = useState<DevicesInfo>()
 
-    const [devices, setDevices] = useState<DevToSend[]>([])
-
-    const [logs, setLogs] = useState<DeviceLogs>({})
+    const devices = useAppSelector(selectDevices)
+    // const [logs, setLogs] = useState<DeviceLogs>({})
 
     // const [timeStart, setTimeStart] = useState<string>("")
     // const [timeEnd, setTimeEnd] = useState<string>("")
@@ -34,7 +36,8 @@ function App() {
                 devices, timeStart, timeEnd
             })
         ).then(response => {
-            setLogs(response.data.deviceLogs)
+            dispatch(setLogs(response.data.deviceLogs))
+            // setLogs(response.data.deviceLogs)
             // console.log(response)
         }).catch(err => alert(err))
     }
@@ -61,7 +64,7 @@ function App() {
     return (
         <div className="App">
             <AppBar getLogs={getLogs}/>
-            {devicesInfo && <Tables devicesInfo={devicesInfo} devices={devices} setDevices={setDevices} logs={logs}/>}
+            {devicesInfo && <Tables devicesInfo={devicesInfo}/>}
         </div>
     );
 }

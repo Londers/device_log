@@ -1,8 +1,12 @@
 import React, {useEffect, useState} from "react";
-import {Button} from "@mui/material";
+import {Button, MenuItem, Select, SelectChangeEvent} from "@mui/material";
 import CustomTimePicker from "../common/CustomTimePicker";
+import {useAppDispatch, useAppSelector} from "../app/hooks";
+import {selectType, setType} from "./deviceLogsSlice";
 
 function AppBar(props: { getLogs: Function }) {
+    const dispatch = useAppDispatch()
+    const selectedType = useAppSelector(selectType)
     const [timeStart, setTimeStart] = useState<Date>(new Date(2000,0,0))
     const [timeEnd, setTimeEnd] = useState<Date>(new Date(2000,0,0))
 
@@ -29,10 +33,17 @@ function AppBar(props: { getLogs: Function }) {
             <Button variant="outlined" onClick={handleChosenTimeClick}>
                 Выбранное время
             </Button>
-
-
             from <CustomTimePicker date={timeStart} setDate={setTimeStart} />
             to <CustomTimePicker date={timeEnd} setDate={setTimeEnd} />
+
+            <Select
+                value={selectedType}
+                onChange={(event: SelectChangeEvent<number>) => dispatch(setType(Number(event.target.value)))}
+            >
+                    <MenuItem value={0}>Технология</MenuItem>)
+                    <MenuItem value={1}>Устройства</MenuItem>)
+                    <MenuItem value={2}>Двери и лампы</MenuItem>)
+            </Select>
         </div>
     )
 }

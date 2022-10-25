@@ -1,6 +1,8 @@
 import React from "react";
 import {DevicesInfo} from "../common";
 import {DataGrid, GridColumns, ruRU} from "@mui/x-data-grid";
+import {useAppDispatch} from "../app/hooks";
+import {setDevices} from "./deviceLogsSlice";
 
 const defaultColumnOptions = {
     flex: 1,
@@ -25,7 +27,7 @@ const columns: GridColumns = [
         flex: 1.5,
     },{
         field: "ID",
-        headerName: "ID устройства",
+        headerName: "ID",
         ...defaultColumnOptions,
         headerAlign: "center",
         align: "center",
@@ -39,7 +41,8 @@ const columns: GridColumns = [
     },
 ]
 
-function DevicesTable(props: { devicesInfo: DevicesInfo, setDevices: Function }) {
+function DevicesTable(props: { devicesInfo: DevicesInfo}) {
+    const dispatch = useAppDispatch()
 
     const rows = props.devicesInfo.devices.map((device, index) => {
         const region = props.devicesInfo.regionInfo[device.region]
@@ -64,8 +67,8 @@ function DevicesTable(props: { devicesInfo: DevicesInfo, setDevices: Function })
                 hideFooter
                 checkboxSelection={true}
                 onSelectionModelChange={(newSelectionModel) => {
-                    props.setDevices(newSelectionModel.sort().map(selected => props.devicesInfo.devices[Number(selected)]))
-                    // newSelectionModel.sort().map(q => console.log(props.devicesInfo.devices[Number(q)]))
+                    // props.setDevices(newSelectionModel.sort().map(selected => props.devicesInfo.devices[Number(selected)]))
+                    dispatch(setDevices(newSelectionModel.sort().map(selected => props.devicesInfo.devices[Number(selected)])))
                 }}
             />}
         </div>

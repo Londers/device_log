@@ -1,6 +1,7 @@
-import React, {useEffect, useRef} from "react";
-import {DeviceLogs, DevToSend} from "../common";
-import {DataGrid, GridColumns, ruRU} from "@mui/x-data-grid";
+import React from "react";
+import {DataGrid, GridColumns, GridToolbar, ruRU} from "@mui/x-data-grid";
+import {useAppSelector} from "../app/hooks";
+import {selectDevices, selectLogs, selectType} from "./deviceLogsSlice";
 
 const defaultColumnOptions = {
     flex: 1,
@@ -12,77 +13,80 @@ const columns: GridColumns = [
     // {field: "pageNum", headerName: "№ стр.", ...defaultColumnOptions, headerAlign: "center", align: "center",},
     {
         field: "dateStart",
-        headerName: "dateStart",
+        headerName: "Время начала",
         ...defaultColumnOptions,
         headerAlign: "center",
         align: "center",
-    },{
+        hideable: false,
+    }, {
         field: "dateEnd",
-        headerName: "dateEnd",
+        headerName: "Время конца",
         ...defaultColumnOptions,
         headerAlign: "center",
         align: "center",
-    },{
+        hideable: false,
+    }, {
         field: "duration",
-        headerName: "duration",
+        headerName: "Длительность",
         ...defaultColumnOptions,
         headerAlign: "center",
         align: "center",
-    },{
+        hideable: false,
+    }, {
         field: "message",
-        headerName: "message",
+        headerName: "Событие",
         ...defaultColumnOptions,
         headerAlign: "center",
         align: "center",
-    },{
+    }, {
         field: "device",
-        headerName: "device",
+        headerName: "Устройство",
         ...defaultColumnOptions,
         headerAlign: "center",
         align: "center",
-    },{
+    }, {
         field: "arm",
-        headerName: "arm",
+        headerName: "АРМ",
         ...defaultColumnOptions,
         headerAlign: "center",
         align: "center",
-    },{
+    }, {
         field: "status",
-        headerName: "status",
+        headerName: "Состояние",
         ...defaultColumnOptions,
         headerAlign: "center",
         align: "center",
-    },{
+    }, {
         field: "rez",
-        headerName: "rez",
+        headerName: "Режим",
         ...defaultColumnOptions,
         headerAlign: "center",
         align: "center",
-    },{
+    }, {
         field: "phase",
-        headerName: "phase",
+        headerName: "Фаза",
         ...defaultColumnOptions,
         headerAlign: "center",
         align: "center",
-    },{
+    }, {
         field: "nk",
-        headerName: "nk",
+        headerName: "НК",
         ...defaultColumnOptions,
         headerAlign: "center",
         align: "center",
-    },{
+    }, {
         field: "ck",
-        headerName: "ck",
+        headerName: "СК",
         ...defaultColumnOptions,
         headerAlign: "center",
         align: "center",
-    },{
+    }, {
         field: "pk",
-        headerName: "pk",
+        headerName: "ПК",
         ...defaultColumnOptions,
         headerAlign: "center",
         align: "center",
-    },{
+    }, {
         field: "id",
         headerName: "id",
         ...defaultColumnOptions,
@@ -91,8 +95,8 @@ const columns: GridColumns = [
     },
 ]
 
-function LogsTable(props: { devices: DevToSend[], logs: DeviceLogs }) {
-    
+function LogsTable() {
+
     // useEffect(() =>{
     //     props.devices.map(device => {
     //         delete device.idevice
@@ -100,54 +104,68 @@ function LogsTable(props: { devices: DevToSend[], logs: DeviceLogs }) {
     //     })
     // }, [props.logs])
 
-    let rows = useRef<any>([])
+    const devices = useAppSelector(selectDevices)
+    const logs = useAppSelector(selectLogs)
+    const selectedType = useAppSelector(selectType)
 
-    useEffect(() => {
-        props.devices.forEach((device, indexDev) => {
-            if (JSON.stringify(props.logs) === "{}") return {id: device}
-            delete device.idevice
-            props.logs[JSON.stringify(device)].forEach((log, index) => {
-                rows.current = [...rows.current, {
-                    id: log.id,
-                    dateStart: "",
-                    dateEnd: "",
-                    duration: "",
-                    message: log.text ?? "",
-                    device: "",
-                    arm: "",
-                    status: "",
-                    rez: "",
-                    phase: "",
-                    nk: "",
-                    ck: "",
-                    pk: "",
-                }]
-            })
+    const convertToRows = () => {
+        let tempRows: any[] = []
+        devices.forEach((device, indexDev) => {
+            const shit = {
+                region: device.region,
+                area: device.area,
+                ID: device.ID,
+                description: device.description,
+            }
+            if (logs[JSON.stringify(shit)]) {
+                logs[JSON.stringify(shit)].forEach((log, index) => {
+                    if (log.type === selectedType) {
+                        tempRows = [...tempRows, {
+                            id: tempRows.length,
+                            dateStart: "",
+                            dateEnd: "",
+                            duration: "",
+                            message: log.text,
+                            device: log.journal.device ?? "",
+                            arm: log.journal.arm ?? "",
+                            status: log.journal.status ?? "",
+                            rez: log.journal.rez ?? "",
+                            phase: log.journal.phase ?? "",
+                            pk: log.journal.pk ?? "",
+                            ck: log.journal.ck ?? "",
+                            nk: log.journal.nk ?? "",
+                        }]
+                    }
+                })
+            }
         })
-    }, [props.logs])
+        return tempRows
+    }
+
+    const rows = convertToRows()
 
     return (
         <div style={{height: "90vh", width: "50%"}}>
             {rows && <DataGrid
                 localeText={ruRU.components.MuiDataGrid.defaultProps.localeText}
                 columns={columns}
-                rows={rows.current}
+                rows={rows}
                 experimentalFeatures={{newEditingApi: true}}
                 disableColumnMenu
                 hideFooter
+                // columnVisibilityModel={{
+                //     id: false,
+                // }}
+                components={{
+                    Toolbar: GridToolbar,
+                }}
                 // checkboxSelection={true}
                 // onSelectionModelChange={(newSelectionModel) => {
-                    // props.setDevices(newSelectionModel.sort().map(selected => props.devicesInfo.devices[Number(selected)]))
-                    // newSelectionModel.sort().map(q => console.log(props.devicesInfo.devices[Number(q)]))
+                // props.setDevices(newSelectionModel.sort().map(selected => props.devicesInfo.devices[Number(selected)]))
+                // newSelectionModel.sort().map(q => console.log(props.devicesInfo.devices[Number(q)]))
                 // }}
             />}
         </div>
-        // <div>
-        //     {props.devices.map(device => {
-        //         delete device.idevice
-        //         return props.logs[JSON.stringify(device)]?.map(log => <>{JSON.stringify(log)}</>)
-        //     })}
-        // </div>
     )
 }
 
