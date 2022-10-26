@@ -57,7 +57,7 @@ function DevicesTable(props: { devicesInfo: DevicesInfo}) {
 
     return (
         // <div style={{height: "682px", width: "42rem", display: "flex", alignItems: "flex-start"}}>
-        <div style={{height: "90vh", width: "50%"}}>
+        <div style={{height: "90vh", width: "20%"}}>
             {rows && <DataGrid
                 localeText={ruRU.components.MuiDataGrid.defaultProps.localeText}
                 columns={columns}
