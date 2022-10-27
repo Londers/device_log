@@ -2,11 +2,13 @@ import React, {useEffect, useState} from "react";
 import {DataGrid, GridColumns, GridColumnVisibilityModel, GridToolbar, ruRU} from "@mui/x-data-grid";
 import {useAppSelector} from "../app/hooks";
 import {selectDevices, selectLogs, selectType} from "./deviceLogsSlice";
+import "./DeviceTable.sass"
 
 const defaultColumnOptions = {
     flex: 1,
     editable: false,
     sortable: false,
+    cellClassName: "table-cell-wrap",
 }
 
 const columns: GridColumns = [
@@ -18,7 +20,7 @@ const columns: GridColumns = [
         headerAlign: "center",
         align: "center",
         hideable: false,
-        flex: 2,
+        flex: 1.5,
     }, {
         field: "dateEnd",
         headerName: "Время конца",
@@ -26,7 +28,7 @@ const columns: GridColumns = [
         headerAlign: "center",
         align: "center",
         hideable: false,
-        flex: 2,
+        flex: 1.5,
     }, {
         field: "duration",
         headerName: "Длительность",
@@ -40,6 +42,7 @@ const columns: GridColumns = [
         ...defaultColumnOptions,
         headerAlign: "center",
         align: "center",
+        flex: 2,
     }, {
         field: "device",
         headerName: "Устройство",
@@ -64,6 +67,7 @@ const columns: GridColumns = [
         ...defaultColumnOptions,
         headerAlign: "center",
         align: "center",
+        flex: 1.5,
     }, {
         field: "phase",
         headerName: "Фаза",
@@ -76,18 +80,21 @@ const columns: GridColumns = [
         ...defaultColumnOptions,
         headerAlign: "center",
         align: "center",
+        flex: .5,
     }, {
         field: "ck",
         headerName: "СК",
         ...defaultColumnOptions,
         headerAlign: "center",
         align: "center",
+        flex: .5,
     }, {
         field: "pk",
         headerName: "ПК",
         ...defaultColumnOptions,
         headerAlign: "center",
         align: "center",
+        flex: .5,
     }, {
         field: "id",
         headerName: "id",
@@ -223,24 +230,35 @@ function LogsTable() {
             }
         })
         console.log("after", tempRows)
-        return tempRows
+        return [...tempRows]
     }
 
     const rows = convertToRows()
 
     return (
-        <div style={{height: "90vh", width: "80%"}}>
+        <div style={{height: "90vh", width: "70%"}}>
             {rows && <DataGrid
                 localeText={ruRU.components.MuiDataGrid.defaultProps.localeText}
                 columns={columns}
                 rows={rows}
                 experimentalFeatures={{newEditingApi: true}}
                 disableColumnMenu
-                hideFooter
+                disableSelectionOnClick
+                initialState={{
+                    pagination: {
+                        pageSize: 25,
+                    },
+                }}
                 onColumnVisibilityModelChange={setColumnVisibility}
                 columnVisibilityModel={columnVisibility}
                 components={{
                     Toolbar: GridToolbar,
+                }}
+                componentsProps={{
+                    toolbar: {
+                        showQuickFilter: true,
+                        quickFilterProps: { debounceMs: 500 },
+                    },
                 }}
                 // checkboxSelection={true}
                 // onSelectionModelChange={(newSelectionModel) => {
