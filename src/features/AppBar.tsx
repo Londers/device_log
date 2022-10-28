@@ -3,6 +3,7 @@ import {Button, MenuItem, Select, SelectChangeEvent} from "@mui/material";
 import CustomTimePicker from "../common/CustomTimePicker";
 import {useAppDispatch, useAppSelector} from "../app/hooks";
 import {selectType, setType} from "./deviceLogsSlice";
+import {Device} from "../common";
 
 function AppBar(props: { getLogs: Function }) {
     const dispatch = useAppDispatch()

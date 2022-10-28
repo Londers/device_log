@@ -19,6 +19,7 @@
     "@types/react": "^18.0.21",
     "@types/react-dom": "^17.0.14",
     "axios": "^1.0.0",
+    "clsx": "^1.2.1",
     "dangerously-set-html-content": "^1.0.9",
     "date-fns": "^2.29.1",
     "node-sass": "^7.0.1",

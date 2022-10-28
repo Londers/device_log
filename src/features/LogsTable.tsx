@@ -1,119 +1,128 @@
 import React, {useEffect, useState} from "react";
-import {DataGrid, GridColumns, GridColumnVisibilityModel, GridToolbar, ruRU} from "@mui/x-data-grid";
+import {DataGrid, GridCellParams, GridColumns, GridColumnVisibilityModel, GridToolbar, ruRU} from "@mui/x-data-grid";
 import {useAppSelector} from "../app/hooks";
+import clsx from 'clsx';
 import {selectDevices, selectLogs, selectType} from "./deviceLogsSlice";
-import "./DeviceTable.sass"
-
-const defaultColumnOptions = {
-    flex: 1,
-    editable: false,
-    sortable: false,
-    cellClassName: "table-cell-wrap",
-}
-
-const columns: GridColumns = [
-    // {field: "pageNum", headerName: "№ стр.", ...defaultColumnOptions, headerAlign: "center", align: "center",},
-    {
-        field: "dateStart",
-        headerName: "Время начала",
-        ...defaultColumnOptions,
-        headerAlign: "center",
-        align: "center",
-        hideable: false,
-        flex: 1.5,
-    }, {
-        field: "dateEnd",
-        headerName: "Время конца",
-        ...defaultColumnOptions,
-        headerAlign: "center",
-        align: "center",
-        hideable: false,
-        flex: 1.5,
-    }, {
-        field: "duration",
-        headerName: "Длительность",
-        ...defaultColumnOptions,
-        headerAlign: "center",
-        align: "center",
-        hideable: false,
-    }, {
-        field: "message",
-        headerName: "Событие",
-        ...defaultColumnOptions,
-        headerAlign: "center",
-        align: "center",
-        flex: 2,
-    }, {
-        field: "device",
-        headerName: "Устройство",
-        ...defaultColumnOptions,
-        headerAlign: "center",
-        align: "center",
-    }, {
-        field: "arm",
-        headerName: "АРМ",
-        ...defaultColumnOptions,
-        headerAlign: "center",
-        align: "center",
-    }, {
-        field: "status",
-        headerName: "Состояние",
-        ...defaultColumnOptions,
-        headerAlign: "center",
-        align: "center",
-    }, {
-        field: "rez",
-        headerName: "Режим",
-        ...defaultColumnOptions,
-        headerAlign: "center",
-        align: "center",
-        flex: 1.5,
-    }, {
-        field: "phase",
-        headerName: "Фаза",
-        ...defaultColumnOptions,
-        headerAlign: "center",
-        align: "center",
-    }, {
-        field: "nk",
-        headerName: "НК",
-        ...defaultColumnOptions,
-        headerAlign: "center",
-        align: "center",
-        flex: .5,
-    }, {
-        field: "ck",
-        headerName: "СК",
-        ...defaultColumnOptions,
-        headerAlign: "center",
-        align: "center",
-        flex: .5,
-    }, {
-        field: "pk",
-        headerName: "ПК",
-        ...defaultColumnOptions,
-        headerAlign: "center",
-        align: "center",
-        flex: .5,
-    }, {
-        field: "id",
-        headerName: "id",
-        ...defaultColumnOptions,
-        headerAlign: "center",
-        align: "center",
-        hideable: false,
-    },
-]
+import {Box} from "@mui/material";
+// import "./DeviceTable.sass"
 
 function LogsTable() {
+    const dividers: number[] = []
+    const checkColor = (id: number): boolean => {
+        id++
+        let result = true
+        if (dividers.length === 2) return id < dividers[1]
+        for (let i = 1; i < dividers.length; i++) {
+            if (id >= dividers[dividers.length - 1]) return result
+            if ((id >= dividers[i - 1]) && (id < dividers[i])) return result
+            result = !result
+        }
+        return false
+    }
 
-    // useEffect(() =>{
-    //     props.devices.map(device => {
-    //         delete device.idevice
-    //         return props.logs[JSON.stringify(device)]?.map(log => console.log(log))
-    //     })
-    // }, [props.logs])
+    const defaultColumnOptions = {
+        flex: 1,
+        editable: false,
+        sortable: false,
+        cellClassName: (params: GridCellParams<string>) => clsx("table-cell", {
+            lgray: !checkColor(Number(params.id)),
+        }),
+        // cellClassName: "table-cell-wrap",
+    }
 
+    const columns: GridColumns = [
+        // {field: "pageNum", headerName: "№ стр.", ...defaultColumnOptions, headerAlign: "center", align: "center",},
+        {
+            field: "dateStart",
+            headerName: "Время начала",
+            ...defaultColumnOptions,
+            headerAlign: "center",
+            align: "center",
+            hideable: false,
+            flex: 1.5,
+        }, {
+            field: "dateEnd",
+            headerName: "Время конца",
+            ...defaultColumnOptions,
+            headerAlign: "center",
+            align: "center",
+            hideable: false,
+            flex: 1.5,
+        }, {
+            field: "duration",
+            headerName: "Длительность",
+            ...defaultColumnOptions,
+            headerAlign: "center",
+            align: "center",
+            hideable: false,
+        }, {
+            field: "message",
+            headerName: "Событие",
+            ...defaultColumnOptions,
+            headerAlign: "center",
+            align: "center",
+            flex: 2,
+        }, {
+            field: "device",
+            headerName: "Устройство",
+            ...defaultColumnOptions,
+            headerAlign: "center",
+            align: "center",
+        }, {
+            field: "arm",
+            headerName: "АРМ",
+            ...defaultColumnOptions,
+            headerAlign: "center",
+            align: "center",
+        }, {
+            field: "status",
+            headerName: "Состояние",
+            ...defaultColumnOptions,
+            headerAlign: "center",
+            align: "center",
+        }, {
+            field: "rez",
+            headerName: "Режим",
+            ...defaultColumnOptions,
+            headerAlign: "center",
+            align: "center",
+            flex: 1.5,
+        }, {
+            field: "phase",
+            headerName: "Фаза",
+            ...defaultColumnOptions,
+            headerAlign: "center",
+            align: "center",
+        }, {
+            field: "nk",
+            headerName: "НК",
+            ...defaultColumnOptions,
+            headerAlign: "center",
+            align: "center",
+            flex: .5,
+        }, {
+            field: "ck",
+            headerName: "СК",
+            ...defaultColumnOptions,
+            headerAlign: "center",
+            align: "center",
+            flex: .5,
+        }, {
+            field: "pk",
+            headerName: "ПК",
+            ...defaultColumnOptions,
+            headerAlign: "center",
+            align: "center",
+            flex: .5,
+        }, {
+            field: "id",
+            headerName: "id",
+            ...defaultColumnOptions,
+            headerAlign: "center",
+            align: "center",
+            hideable: false,
+        },
+    ]
     const devices = useAppSelector(selectDevices)
     const logs = useAppSelector(selectLogs)
     const selectedType = useAppSelector(selectType)
@@ -193,6 +202,26 @@ function LogsTable() {
     const convertToRows = () => {
         let tempRows: any[] = []
         devices.forEach((device, indexDev) => {
+
+            const devRow = {
+                id: tempRows.length,
+                dateStart: device.description,
+                dateEnd: "",
+                duration: "",
+                message: "",
+                device: "",
+                arm: "",
+                status: "",
+                rez: "",
+                phase: "",
+                pk: "",
+                ck: "",
+                nk: "",
+            }
+            tempRows = [...tempRows, devRow]
+
+            dividers.push(tempRows.length)
+
             const shit = {
                 region: device.region,
                 area: device.area,
@@ -202,7 +231,7 @@ function LogsTable() {
             if (logs[JSON.stringify(shit)]) {
                 logs[JSON.stringify(shit)].filter(log => log.type === selectedType).forEach((log, index) => {
                     const dateStart = new Date(log.time)
-                    const dateEnd = (index === 0) ? new Date() : new Date(logs[JSON.stringify(shit)][index - 1].time)
+                    const dateEnd = (index === 0) ? new Date() : new Date(logs[JSON.stringify(shit)].filter(log => log.type === selectedType)[index - 1].time)
                     const duration = dateEnd.getTime() - dateStart.getTime()
 
                     const hours = Math.floor(duration / (1000 * 60 * 60))
@@ -229,26 +258,36 @@ function LogsTable() {
                 })
             }
         })
-        console.log("after", tempRows)
+        console.log(dividers)
         return [...tempRows]
     }
 
     const rows = convertToRows()
 
     return (
-        <div style={{height: "90vh", width: "70%"}}>
+        <Box
+             sx={{
+                 height: "91vh",
+                 width: "70%",
+                 '& .table-cell.lgray': {
+                     backgroundColor: 'lightgray',
+                 },
+             }}
+        >
             {rows && <DataGrid
                 localeText={ruRU.components.MuiDataGrid.defaultProps.localeText}
                 columns={columns}
                 rows={rows}
                 experimentalFeatures={{newEditingApi: true}}
                 disableColumnMenu
+                disableColumnFilter={true}
                 disableSelectionOnClick
-                initialState={{
-                    pagination: {
-                        pageSize: 25,
-                    },
-                }}
+                autoPageSize={true}
+                // initialState={{
+                //     pagination: {
+                //         pageSize: 25,
+                //     },
+                // }}
                 onColumnVisibilityModelChange={setColumnVisibility}
                 columnVisibilityModel={columnVisibility}
                 components={{
@@ -257,7 +296,7 @@ function LogsTable() {
                 componentsProps={{
                     toolbar: {
                         showQuickFilter: true,
-                        quickFilterProps: { debounceMs: 500 },
+                        quickFilterProps: {debounceMs: 500},
                     },
                 }}
                 // checkboxSelection={true}
@@ -266,7 +305,7 @@ function LogsTable() {
                 // newSelectionModel.sort().map(q => console.log(props.devicesInfo.devices[Number(q)]))
                 // }}
             />}
-        </div>
+        </Box>
     )
 }
 

@@ -49,13 +49,13 @@ export interface DeviceLogs {
     [index: string]: Log[];
 }
 
-export interface DevToSend {
-    idevice?: number;
-    region: string;
-    area: string;
-    ID: number;
-    description: string;
-}
+// export interface DevToSend {
+//     idevice?: number;
+//     region: string;
+//     area: string;
+//     ID: number;
+//     description: string;
+// }
 
 export interface DevLogsSlice {
     devices: Device[];
