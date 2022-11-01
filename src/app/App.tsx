@@ -27,7 +27,8 @@ function App() {
     const getLogs = (timeStart: string, timeEnd: string) => {
         let href = ""
         if (!process.env.NODE_ENV || process.env.NODE_ENV === "development") {
-            href = "https://192.168.0.101:4443/user/Admin/deviceLog/info"
+            href = "https://192.168.115.134:4443/user/Admin/deviceLog/info"
+            // href = "https://192.168.0.101:4443/user/Admin/deviceLog/info"
         } else {
             href = window.location.href + '/info'
         }
@@ -49,7 +50,8 @@ function App() {
     useEffect(() => {
         let href = ""
         if (!process.env.NODE_ENV || process.env.NODE_ENV === "development") {
-            href = "https://192.168.0.101:4443/user/Admin/deviceLog"
+            href = "https://192.168.115.134:4443/user/Admin/deviceLog"
+            // href = "https://192.168.0.101:4443/user/Admin/deviceLog"
         } else {
             href = window.location.href
         }

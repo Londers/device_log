@@ -1,13 +1,26 @@
 import React, {useEffect, useState} from "react";
 import {DataGrid, GridCellParams, GridColumns, GridColumnVisibilityModel, GridToolbar, ruRU} from "@mui/x-data-grid";
-import {useAppSelector} from "../app/hooks";
+import {useAppDispatch, useAppSelector} from "../app/hooks";
 import clsx from 'clsx';
-import {selectDevices, selectLogs, selectType} from "./deviceLogsSlice";
+import {
+    selectDevices,
+    selectLogs,
+    selectPage,
+    selectPageSize,
+    selectType,
+    setDividers,
+    setPage, setPageSize
+} from "./deviceLogsSlice";
 import {Box} from "@mui/material";
+import {Divider} from "../common";
 // import "./DeviceTable.sass"
 
 function LogsTable() {
+    const dispatch = useAppDispatch()
+    const pageSize = useAppSelector(selectPageSize)
+    const page = useAppSelector(selectPage)
     const dividers: number[] = []
+    const dividersForJump: Divider[] = []
     const checkColor = (id: number): boolean => {
         id++
         let result = true
@@ -221,6 +234,7 @@ function LogsTable() {
             tempRows = [...tempRows, devRow]
 
             dividers.push(tempRows.length)
+            dividersForJump.push({description: device.description, num: tempRows.length})
 
             const shit = {
                 region: device.region,
@@ -259,6 +273,7 @@ function LogsTable() {
             }
         })
         console.log(dividers)
+        dispatch(setDividers(dividersForJump))
         return [...tempRows]
     }
 
@@ -267,7 +282,7 @@ function LogsTable() {
     return (
         <Box
              sx={{
-                 height: "91vh",
+                 height: "92.2vh",
                  width: "70%",
                  '& .table-cell.lgray': {
                      backgroundColor: 'lightgray',
@@ -283,13 +298,12 @@ function LogsTable() {
                 disableColumnFilter={true}
                 disableSelectionOnClick
                 autoPageSize={true}
-                // initialState={{
-                //     pagination: {
-                //         pageSize: 25,
-                //     },
-                // }}
                 onColumnVisibilityModelChange={setColumnVisibility}
                 columnVisibilityModel={columnVisibility}
+                // pageSize={pageSize}
+                onPageSizeChange={newPageSize => dispatch(setPageSize(newPageSize))}
+                page={page}
+                onPageChange={newPage => dispatch(setPage(newPage))}
                 components={{
                     Toolbar: GridToolbar,
                 }}
@@ -299,6 +313,7 @@ function LogsTable() {
                         quickFilterProps: {debounceMs: 500},
                     },
                 }}
+                // rowsPerPageOptions={[10, 15, 20]}
                 // checkboxSelection={true}
                 // onSelectionModelChange={(newSelectionModel) => {
                 // props.setDevices(newSelectionModel.sort().map(selected => props.devicesInfo.devices[Number(selected)]))

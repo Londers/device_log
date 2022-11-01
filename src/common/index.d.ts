@@ -60,8 +60,17 @@ export interface DeviceLogs {
 export interface DevLogsSlice {
     devices: Device[];
     logs: DeviceLogs;
-    selectedType: number
+    selectedType: number;
+    dividers: Divider[];
+    pageSize: number;
+    page: number;
 }
+
+export interface Divider {
+    description: string;
+    num: number;
+}
+
 
 //
 // export interface TableLog {
