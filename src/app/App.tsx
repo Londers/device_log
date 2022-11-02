@@ -5,7 +5,7 @@ import AppBar from "../features/AppBar";
 import Tables from "../features/Tables";
 import {Device, DevicesInfo} from "../common";
 import {useAppDispatch, useAppSelector} from "./hooks";
-import {selectDevices, setDevices, setLogs} from "../features/deviceLogsSlice";
+import {selectDevices, setDevices, setLogFileName, setLogs} from "../features/deviceLogsSlice";
 
 function App() {
     const dispatch = useAppDispatch()
@@ -42,6 +42,7 @@ function App() {
             })
         ).then(response => {
             dispatch(setLogs(response.data.deviceLogs))
+            dispatch(setLogFileName("log-" + new Date(timeStart).toLocaleString() + "-" + new Date(timeEnd).toLocaleString() + ".xlsx"))
             // setLogs(response.data.deviceLogs)
             // console.log(response)
         }).catch(err => alert(err))

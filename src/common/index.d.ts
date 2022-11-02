@@ -64,6 +64,7 @@ export interface DevLogsSlice {
     dividers: Divider[];
     pageSize: number;
     page: number;
+    logFileName: string;
 }
 
 export interface Divider {

@@ -13,6 +13,7 @@ import {
 } from "./deviceLogsSlice";
 import {Box} from "@mui/material";
 import {Divider} from "../common";
+import CustomToolbar from "../common/CustomToolbar";
 // import "./DeviceTable.sass"
 
 function LogsTable() {
@@ -304,15 +305,14 @@ function LogsTable() {
                 onPageSizeChange={newPageSize => dispatch(setPageSize(newPageSize))}
                 page={page}
                 onPageChange={newPage => dispatch(setPage(newPage))}
-                components={{
-                    Toolbar: GridToolbar,
-                }}
-                componentsProps={{
-                    toolbar: {
-                        showQuickFilter: true,
-                        quickFilterProps: {debounceMs: 500},
-                    },
-                }}
+                // components={{Toolbar: GridToolbar,}}
+                components={{ Toolbar: CustomToolbar }}
+                // componentsProps={{
+                //     toolbar: {
+                //         showQuickFilter: true,
+                //         quickFilterProps: {debounceMs: 500},
+                //     },
+                // }}
                 // rowsPerPageOptions={[10, 15, 20]}
                 // checkboxSelection={true}
                 // onSelectionModelChange={(newSelectionModel) => {
