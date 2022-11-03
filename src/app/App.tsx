@@ -16,8 +16,9 @@ function App() {
 
     // const [logs, setLogs] = useState<DeviceLogs>({})
 
-    // const [timeStart, setTimeStart] = useState<string>("")
-    // const [timeEnd, setTimeEnd] = useState<string>("")
+
+    const [timeStart, setTimeStart] = useState<Date>(new Date(2000, 0, 0))
+    const [timeEnd, setTimeEnd] = useState<Date>(new Date(2000, 0, 0))
     //
     // useEffect(() => {
     //     setTimeStart(new Date(new Date().setHours(new Date().getTimezoneOffset() / -60, 0, 0, 0)).toISOString())
@@ -70,8 +71,8 @@ function App() {
 
     return (
         <div className="App">
-            <AppBar getLogs={getLogs}/>
-            {devicesInfo && <Tables devicesInfo={devicesInfo} setDevices={setSelectedDevices}/>}
+            <AppBar getLogs={getLogs} timeStart={timeStart} setTimeStart={setTimeStart} timeEnd={timeEnd} setTimeEnd={setTimeEnd} />
+            {devicesInfo && <Tables devicesInfo={devicesInfo} setDevices={setSelectedDevices} timeEnd={timeEnd}/>}
         </div>
     );
 }

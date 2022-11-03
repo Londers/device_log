@@ -1,12 +1,11 @@
-import React, {useEffect, useState} from "react";
-import {DataGrid, GridCellParams, GridColumns, GridColumnVisibilityModel, GridToolbar, ruRU} from "@mui/x-data-grid";
+import React, {useEffect, useRef, useState} from "react";
+import {DataGrid, GridCellParams, GridColumns, GridColumnVisibilityModel, ruRU} from "@mui/x-data-grid";
 import {useAppDispatch, useAppSelector} from "../app/hooks";
 import clsx from 'clsx';
 import {
     selectDevices,
     selectLogs,
     selectPage,
-    selectPageSize,
     selectType,
     setDividers,
     setPage, setPageSize
@@ -14,11 +13,12 @@ import {
 import {Box} from "@mui/material";
 import {Divider} from "../common";
 import CustomToolbar from "../common/CustomToolbar";
+
 // import "./DeviceTable.sass"
 
-function LogsTable() {
+function LogsTable(props: {timeEnd: Date}) {
     const dispatch = useAppDispatch()
-    const pageSize = useAppSelector(selectPageSize)
+    // const pageSize = useAppSelector(selectPageSize)
     const page = useAppSelector(selectPage)
     const dividers: number[] = []
     const dividersForJump: Divider[] = []
@@ -34,6 +34,10 @@ function LogsTable() {
         return false
     }
 
+    const devices = useAppSelector(selectDevices)
+    const logs = useAppSelector(selectLogs)
+    const selectedType = useAppSelector(selectType)
+
     const defaultColumnOptions = {
         flex: 1,
         editable: false,
@@ -43,7 +47,6 @@ function LogsTable() {
         }),
         // cellClassName: "table-cell-wrap",
     }
-
     const columns: GridColumns = [
         // {field: "pageNum", headerName: "№ стр.", ...defaultColumnOptions, headerAlign: "center", align: "center",},
         {
@@ -54,6 +57,11 @@ function LogsTable() {
             align: "center",
             hideable: false,
             flex: 1.5,
+            getApplyQuickFilterFn: ((value: string) => {
+                return (params => {
+                    return devices.some(dev => dev.description === params.value)
+                })
+            })
         }, {
             field: "dateEnd",
             headerName: "Время конца",
@@ -137,9 +145,6 @@ function LogsTable() {
             hideable: false,
         },
     ]
-    const devices = useAppSelector(selectDevices)
-    const logs = useAppSelector(selectLogs)
-    const selectedType = useAppSelector(selectType)
 
     const [columnVisibility, setColumnVisibility] = useState<GridColumnVisibilityModel>({
         arm: true,
@@ -246,7 +251,7 @@ function LogsTable() {
             if (logs[JSON.stringify(shit)]) {
                 logs[JSON.stringify(shit)].filter(log => log.type === selectedType).forEach((log, index) => {
                     const dateStart = new Date(log.time)
-                    const dateEnd = (index === 0) ? new Date() : new Date(logs[JSON.stringify(shit)].filter(log => log.type === selectedType)[index - 1].time)
+                    const dateEnd = (index === 0) ? new Date(props.timeEnd) : new Date(logs[JSON.stringify(shit)].filter(log => log.type === selectedType)[index - 1].time)
                     const duration = dateEnd.getTime() - dateStart.getTime()
 
                     const hours = Math.floor(duration / (1000 * 60 * 60))
@@ -273,7 +278,7 @@ function LogsTable() {
                 })
             }
         })
-        console.log(dividers)
+        // console.log(dividers)
         dispatch(setDividers(dividersForJump))
         return [...tempRows]
     }
@@ -282,15 +287,15 @@ function LogsTable() {
 
     return (
         <Box
-             sx={{
-                 height: "92.2vh",
-                 width: "70%",
-                 '& .table-cell.lgray': {
-                     backgroundColor: 'lightgray',
-                 },
-             }}
+            sx={{
+                height: "92.2vh",
+                width: "70%",
+                '& .table-cell.lgray': {
+                    backgroundColor: 'lightgray',
+                },
+            }}
         >
-            {rows && <DataGrid
+            {(rows.length !== 0) && <DataGrid
                 localeText={ruRU.components.MuiDataGrid.defaultProps.localeText}
                 columns={columns}
                 rows={rows}
@@ -306,7 +311,18 @@ function LogsTable() {
                 page={page}
                 onPageChange={newPage => dispatch(setPage(newPage))}
                 // components={{Toolbar: GridToolbar,}}
-                components={{ Toolbar: CustomToolbar }}
+                components={{Toolbar: CustomToolbar}}
+                onStateChange={(props) => {
+                    const filteredRows = rows.filter(row => props.filter.filteredRowsLookup[row.id])
+                    const temp: { description: string; num: number; }[] = []
+                    filteredRows.forEach((row, id) => {
+                        if (devices.some(dev => dev.description === row.dateStart)) {
+                            temp.push({description: row.dateStart, num: id + 1})
+                        }
+                    })
+                    if (JSON.stringify(temp) === JSON.stringify(dividersForJump)) return
+                    dispatch(setDividers(temp))
+                }}
                 // componentsProps={{
                 //     toolbar: {
                 //         showQuickFilter: true,

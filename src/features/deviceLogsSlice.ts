@@ -9,7 +9,7 @@ const initialState: DevLogsSlice = {
     dividers: [],
     pageSize: 10,
     page: 0,
-    logFileName: "log"
+    logFileName: "log",
 }
 
 export const deviceLogsSlice = createSlice({

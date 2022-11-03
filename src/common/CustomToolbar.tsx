@@ -71,9 +71,7 @@ export default function CustomToolbar(props: GridToolbarContainerProps) {
             <GridToolbarColumnsButton/>
             <GridToolbarDensitySelector/>
             <CustomExportButton/>
-            <GridToolbarQuickFilter quickFilterParser={valeu => {
-                return true
-            }}/>
+            <GridToolbarQuickFilter />
         </GridToolbarContainer>
     )
 }
