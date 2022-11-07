@@ -5,7 +5,7 @@ import clsx from 'clsx';
 import {
     selectDevices,
     selectLogs,
-    selectPage,
+    selectPage, selectTimeEnd,
     selectType,
     setDividers,
     setPage, setPageSize
@@ -16,7 +16,7 @@ import CustomToolbar from "../common/CustomToolbar";
 
 // import "./DeviceTable.sass"
 
-function LogsTable(props: {timeEnd: Date}) {
+function LogsTable() {
     const dispatch = useAppDispatch()
     // const pageSize = useAppSelector(selectPageSize)
     const page = useAppSelector(selectPage)
@@ -37,6 +37,7 @@ function LogsTable(props: {timeEnd: Date}) {
     const devices = useAppSelector(selectDevices)
     const logs = useAppSelector(selectLogs)
     const selectedType = useAppSelector(selectType)
+    const timeEnd = useAppSelector(selectTimeEnd)
 
     const defaultColumnOptions = {
         flex: 1,
@@ -251,7 +252,7 @@ function LogsTable(props: {timeEnd: Date}) {
             if (logs[JSON.stringify(shit)]) {
                 logs[JSON.stringify(shit)].filter(log => log.type === selectedType).forEach((log, index) => {
                     const dateStart = new Date(log.time)
-                    const dateEnd = (index === 0) ? new Date(props.timeEnd) : new Date(logs[JSON.stringify(shit)].filter(log => log.type === selectedType)[index - 1].time)
+                    const dateEnd = (index === 0) ? new Date(timeEnd ?? "") : new Date(logs[JSON.stringify(shit)].filter(log => log.type === selectedType)[index - 1].time)
                     const duration = dateEnd.getTime() - dateStart.getTime()
 
                     const hours = Math.floor(duration / (1000 * 60 * 60))
@@ -279,11 +280,14 @@ function LogsTable(props: {timeEnd: Date}) {
             }
         })
         // console.log(dividers)
-        dispatch(setDividers(dividersForJump))
         return [...tempRows]
     }
 
     const rows = convertToRows()
+
+    useEffect(() => {
+        dispatch(setDividers(dividersForJump))
+    }, [rows])
 
     return (
         <Box

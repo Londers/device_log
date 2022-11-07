@@ -10,6 +10,7 @@ const initialState: DevLogsSlice = {
     pageSize: 10,
     page: 0,
     logFileName: "log",
+    timeEnd: undefined,
 }
 
 export const deviceLogsSlice = createSlice({
@@ -37,6 +38,9 @@ export const deviceLogsSlice = createSlice({
         setLogFileName: (state, action: PayloadAction<string>) => {
             state.logFileName = action.payload
         },
+        setTimeEndSave: (state, action: PayloadAction<string | undefined>) => {
+            state.timeEnd = action.payload
+        },
     },
 })
 
@@ -48,6 +52,7 @@ export const {
     setPageSize,
     setPage,
     setLogFileName,
+    setTimeEndSave,
 } = deviceLogsSlice.actions
 
 export const selectDevices = (state: RootState) => state.deviceLogs.devices
@@ -57,5 +62,6 @@ export const selectDividers = (state: RootState) => state.deviceLogs.dividers
 export const selectPageSize = (state: RootState) => state.deviceLogs.pageSize
 export const selectPage = (state: RootState) => state.deviceLogs.page
 export const selectLogFileName = (state: RootState) => state.deviceLogs.logFileName
+export const selectTimeEnd = (state: RootState) => state.deviceLogs.timeEnd
 
 export default deviceLogsSlice.reducer

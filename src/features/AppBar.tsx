@@ -1,4 +1,4 @@
-import React, {useEffect} from "react";
+import React, {useEffect, useState} from "react";
 import {Button, MenuItem, Select, SelectChangeEvent} from "@mui/material";
 import CustomTimePicker from "../common/CustomTimePicker";
 import {useAppDispatch, useAppSelector} from "../app/hooks";
@@ -11,13 +11,15 @@ function AppBar(props: { getLogs: Function, timeStart: Date, setTimeStart: Funct
     const dividers = useAppSelector(selectDividers)
 
     useEffect(() => {
-        props.setTimeStart(new Date(new Date().setHours(new Date().getTimezoneOffset() / -60, 0, 0, 0)))
-        props.setTimeEnd(new Date(new Date().getTime() - (new Date().getTimezoneOffset() * 60 * 1000)))
+        props.setTimeStart(new Date().setHours(0, 0, 0))
+        props.setTimeEnd(new Date())
     }, [])
 
     const handleDayButtonClick = () => {
-        const timeStart1 = new Date(new Date().setHours(new Date().getTimezoneOffset() / -60, 0, 0, 0)).toISOString()
-        const timeEnd1 = new Date(new Date().getTime() - (new Date().getTimezoneOffset() * 60 * 1000)).toISOString()
+        // const timeStart1 = new Date(new Date().setHours(new Date().getTimezoneOffset() / -60, 0, 0, 0)).toISOString()
+        // const timeEnd1 = new Date(new Date().getTime() - (new Date().getTimezoneOffset() * 60 * 1000)).toISOString()
+        const timeStart1 = new Date(new Date().setHours(0, 0, 0)).toISOString()
+        const timeEnd1 = new Date().toISOString()
         props.setTimeStart(new Date(timeStart1))
         props.setTimeEnd(new Date(timeEnd1))
         props.getLogs(timeStart1, timeEnd1)
@@ -27,16 +29,22 @@ function AppBar(props: { getLogs: Function, timeStart: Date, setTimeStart: Funct
         props.getLogs(props.timeStart.toISOString(), props.timeEnd.toISOString())
     }
 
+    const [selectVal, setSelectVal] = useState(1)
+
     return (
-        <div>
+        <div style={{display: "inline-flex", padding: "2px", width: "100%"}} className="test">
             <Button variant="outlined" onClick={handleDayButtonClick}>
                 Сутки
             </Button>
             <Button variant="outlined" onClick={handleChosenTimeClick}>
                 Выбранное время
             </Button>
-            from <CustomTimePicker date={props.timeStart} setDate={props.setTimeStart}/>
-            to <CustomTimePicker date={props.timeEnd} setDate={props.setTimeEnd}/>
+            <div>
+                С <CustomTimePicker date={props.timeStart} setDate={props.setTimeStart}/>
+            </div>
+            <div>
+                до <CustomTimePicker date={props.timeEnd} setDate={props.setTimeEnd}/>
+            </div>
 
             <Select
                 value={selectedType}
@@ -48,13 +56,20 @@ function AppBar(props: { getLogs: Function, timeStart: Date, setTimeStart: Funct
             </Select>
             {(dividers.length > 1) && <Select
                 sx={{maxWidth: "200px"}}
-                defaultValue={dividers[0]?.num}
-                onChange={(event: SelectChangeEvent<number>) => dispatch(setPage(Math.floor(Number(event.target.value) / pageSize)))}
+                value={selectVal}
+                onChange={(event: SelectChangeEvent<number>) => {
+                    dispatch(setPage(Math.floor(Number(event.target.value) / pageSize)))
+                    setSelectVal(Number(event.target.value))
+                }}
             >
                 {(dividers.length !== 0) && dividers.map(div =>
                     <MenuItem value={div.num} key={div.num}>{div.description}</MenuItem>
                 )}
             </Select>}
+            <Button variant="outlined"
+                    onClick={() => window.open(window.location.origin + "/user/" + localStorage.getItem("login") + "/deviceJournal")}>
+                Внутренний журнал
+            </Button>
         </div>
     )
 }

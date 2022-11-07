@@ -5,7 +5,7 @@ import AppBar from "../features/AppBar";
 import Tables from "../features/Tables";
 import {Device, DevicesInfo} from "../common";
 import {useAppDispatch, useAppSelector} from "./hooks";
-import {selectDevices, setDevices, setLogFileName, setLogs} from "../features/deviceLogsSlice";
+import {selectDevices, setDevices, setLogFileName, setLogs, setTimeEndSave} from "../features/deviceLogsSlice";
 
 function App() {
     const dispatch = useAppDispatch()
@@ -39,11 +39,14 @@ function App() {
         axios.post(
             href,
             JSON.stringify({
-                devices: selectedDevices, timeStart, timeEnd
+                devices: selectedDevices,
+                timeStart: new Date(new Date(timeStart).setHours(new Date(timeStart).getHours() - new Date().getTimezoneOffset() / 60)).toISOString(),
+                timeEnd: new Date(new Date(timeEnd).setHours(new Date(timeEnd).getHours() - new Date().getTimezoneOffset() / 60)).toISOString(),
             })
         ).then(response => {
             dispatch(setLogs(response.data.deviceLogs))
             dispatch(setLogFileName("log-" + new Date(timeStart).toLocaleString() + "-" + new Date(timeEnd).toLocaleString() + ".xlsx"))
+            dispatch(setTimeEndSave(timeEnd))
             // setLogs(response.data.deviceLogs)
             // console.log(response)
         }).catch(err => alert(err))
@@ -62,7 +65,7 @@ function App() {
             // action.payload,
         ).then((response: AxiosResponse<DevicesInfo>) => {
             // window.alert("Пароль успешно изменён. Пожалуйста, войдите в аккаунт снова.")
-            console.log("success", response)
+            // console.log("success", response)
             setDevicesInfo(response.data)
         }).catch((error) => {
             window.alert(error.message)
@@ -71,8 +74,9 @@ function App() {
 
     return (
         <div className="App">
-            <AppBar getLogs={getLogs} timeStart={timeStart} setTimeStart={setTimeStart} timeEnd={timeEnd} setTimeEnd={setTimeEnd} />
-            {devicesInfo && <Tables devicesInfo={devicesInfo} setDevices={setSelectedDevices} timeEnd={timeEnd}/>}
+            <AppBar getLogs={getLogs} timeStart={timeStart} setTimeStart={setTimeStart} timeEnd={timeEnd}
+                    setTimeEnd={setTimeEnd}/>
+            {devicesInfo && <Tables devicesInfo={devicesInfo} setDevices={setSelectedDevices}/>}
         </div>
     );
 }
