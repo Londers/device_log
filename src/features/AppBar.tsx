@@ -32,20 +32,23 @@ function AppBar(props: { getLogs: Function, timeStart: Date, setTimeStart: Funct
     const [selectVal, setSelectVal] = useState(1)
 
     return (
-        <div style={{display: "inline-flex", padding: "2px", width: "100%"}} className="test">
+        <div style={{display: "inline-flex", padding: "4px", width: "98%"}} className="appBar">
             <Button variant="outlined" onClick={handleDayButtonClick}>
                 Сутки
             </Button>
-            <Button variant="outlined" onClick={handleChosenTimeClick}>
-                Выбранное время
-            </Button>
-            <div>
-                С <CustomTimePicker date={props.timeStart} setDate={props.setTimeStart}/>
+            <div style={{display: "inline-flex"}} className="chosenTime">
+                <Button variant="outlined" onClick={handleChosenTimeClick}>
+                    Выбранное время
+                </Button>
+                <div>
+                    С
+                </div>
+                <CustomTimePicker date={props.timeStart} setDate={props.setTimeStart}/>
+                <div>
+                    до
+                </div>
+                <CustomTimePicker date={props.timeEnd} setDate={props.setTimeEnd}/>
             </div>
-            <div>
-                до <CustomTimePicker date={props.timeEnd} setDate={props.setTimeEnd}/>
-            </div>
-
             <Select
                 value={selectedType}
                 onChange={(event: SelectChangeEvent<number>) => dispatch(setType(Number(event.target.value)))}

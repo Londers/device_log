@@ -1,5 +1,5 @@
 import React, {useEffect, useState} from 'react';
-import './App.css';
+import './App.sass';
 import axios, {AxiosResponse} from "axios";
 import AppBar from "../features/AppBar";
 import Tables from "../features/Tables";

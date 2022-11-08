@@ -257,7 +257,9 @@ function LogsTable() {
 
                     const hours = Math.floor(duration / (1000 * 60 * 60))
                     const minutes = Math.floor((duration / (1000 * 60)) % 60)
-                    const seconds = Math.floor((duration / 1000) % 60)
+                    // const seconds = Math.floor((duration / 1000) % 60)
+                    let seconds = dateEnd.getSeconds() - dateStart.getSeconds()
+                    if (seconds < 0) seconds += 60
                     const durationString = hours + 'ч ' + minutes + 'м ' + seconds + 'с'
 
                     const row = {
