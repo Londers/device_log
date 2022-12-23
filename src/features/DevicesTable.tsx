@@ -1,8 +1,6 @@
-import React, {useState} from "react";
-import {Device, DevicesInfo} from "../common";
+import React, {useEffect, useRef, useState} from "react";
+import {DevicesInfo} from "../common";
 import {DataGrid, GridColumns, GridToolbarQuickFilter, ruRU} from "@mui/x-data-grid";
-import {useAppDispatch} from "../app/hooks";
-import {setDevices} from "./deviceLogsSlice";
 import "./DeviceTable.sass"
 
 const defaultColumnOptions = {
@@ -55,6 +53,15 @@ function DevicesTable(props: { devicesInfo: DevicesInfo, setDevices: Function })
         }
     })
 
+    const selection = useRef<number[]>([props.devicesInfo.devices.findIndex(dev =>
+        (dev.region === localStorage.getItem("region")) && (dev.area === localStorage.getItem("area"))
+        && (dev.ID === Number(localStorage.getItem("ID"))) && (dev.description === localStorage.getItem("description")))])
+
+    const waitAppRender = useRef<boolean>(true)
+    useEffect(() => {
+        waitAppRender.current = false
+    }, [])
+
     return (
         <div style={{height: "92.2vh", width: "30%"}}>
             {rows && <DataGrid
@@ -67,9 +74,11 @@ function DevicesTable(props: { devicesInfo: DevicesInfo, setDevices: Function })
                 checkboxSelection={true}
                 onSelectionModelChange={(newSelectionModel) => {
                     // props.setDevices(newSelectionModel.sort().map(selected => props.devicesInfo.devices[Number(selected)]))
-                    props.setDevices(newSelectionModel.sort().map(selected => props.devicesInfo.devices[Number(selected)]))
+                    if (!waitAppRender.current)props.setDevices(newSelectionModel.sort().map(selected => props.devicesInfo.devices[Number(selected)]))
+                    selection.current = newSelectionModel.map(sel => Number(sel))
                     // dispatch(setDevices(newSelectionModel.sort().map(selected => props.devicesInfo.devices[Number(selected)])))
                 }}
+                selectionModel={selection.current}
                 components={{
                     // Toolbar: GridToolbar,
                     Toolbar: () => <GridToolbarQuickFilter/>

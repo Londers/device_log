@@ -7,12 +7,25 @@ import {Device, DevicesInfo} from "../common";
 import {useAppDispatch, useAppSelector} from "./hooks";
 import {selectDevices, setDevices, setLogFileName, setLogs, setTimeEndSave} from "../features/deviceLogsSlice";
 
+function isRemoteOpen(): Device[] {
+    const region = localStorage.getItem("region"),
+        area = localStorage.getItem("area"),
+        ID = Number(localStorage.getItem("ID")),
+        description = localStorage.getItem("description")
+
+    if (region && area && ID && description) {
+        return [{region, area, ID, description}]
+    } else {
+        return []
+    }
+}
+
 function App() {
     const dispatch = useAppDispatch()
     const [devicesInfo, setDevicesInfo] = useState<DevicesInfo>()
 
     // const devices = useAppSelector(selectDevices)
-    const [selectedDevices, setSelectedDevices] = useState<Device[]>([])
+    const [selectedDevices, setSelectedDevices] = useState<Device[]>(isRemoteOpen())
 
     // const [logs, setLogs] = useState<DeviceLogs>({})
 
@@ -24,6 +37,15 @@ function App() {
     //     setTimeStart(new Date(new Date().setHours(new Date().getTimezoneOffset() / -60, 0, 0, 0)).toISOString())
     //     setTimeEnd(new Date(new Date().getTime() - (new Date().getTimezoneOffset() * 60 * 1000)).toISOString())
     // }, [])
+
+    useEffect(() => {
+        if (selectedDevices.length !== 0) {
+            setDevices(selectedDevices)
+            const timeStart1 = new Date(new Date().setHours(0, 0, 0)).toISOString()
+            const timeEnd1 = new Date().toISOString()
+            getLogs(timeStart1, timeEnd1)
+        }
+    }, [])
 
     const getLogs = (timeStart: string, timeEnd: string) => {
         let href = ""
@@ -44,6 +66,15 @@ function App() {
                 timeEnd: new Date(new Date(timeEnd).setHours(new Date(timeEnd).getHours() - new Date().getTimezoneOffset() / 60)).toISOString(),
             })
         ).then(response => {
+            setTimeout(() => {
+                if (localStorage.getItem("region") !== null) {
+                    localStorage.removeItem("region")
+                    localStorage.removeItem("area")
+                    localStorage.removeItem("ID")
+                    localStorage.removeItem("description")
+                }
+            }, 1000)
+
             dispatch(setLogs(response.data.deviceLogs))
             dispatch(setLogFileName("log-" + new Date(timeStart).toLocaleString() + "-" + new Date(timeEnd).toLocaleString() + ".xlsx"))
             dispatch(setTimeEndSave(timeEnd))
